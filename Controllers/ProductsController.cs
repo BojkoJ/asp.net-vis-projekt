@@ -131,6 +131,8 @@ namespace Projekt.Controllers
                 "Modra" => "Modrá",
                 "Cervena" => "Červená",
                 "Vicebarevne" => "Vícebarevné",
+                "Zelena" => "Zelená",
+                "Tyrkysova" => "Tyrkysová",
                 _ => color,
             };
         }

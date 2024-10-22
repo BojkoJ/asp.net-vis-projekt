@@ -1,9 +1,9 @@
 @model List<Projekt.Models.Category>
 
 
-<div class=" relative group">
+<div class="relative group">
     <a href="#" class="cursor-pointer">
-        <p class="text-white hover:text-gray-300 cursor-pointer">Produkty</p>
+        <p class="text-white hover:text-gray-300 cursor-pointer font-medium">Produkty</p>
         <!-- Dropdown pro kategorie -->
         <div class="absolute hidden group-hover:flex flex-col bg-white shadow-lg w-48 h-[135px] z-50 -right-16">
             <ul class="text-gray-800">
@@ -11,7 +11,7 @@
                 @foreach (var category in Model)        
                 {
                     <li>  
-                            <a href="@Url.Action("ProductsByCategory", "Products", new { categoryId = category.CategoryId })" class="block px-4 py-2 hover:bg-gray-100 rounded-lg">
+                            <a href="@Url.Action("ProductsByCategory", "Products", new { categoryId = category.CategoryId })" class="font-medium block px-4 py-2 hover:bg-gray-100 rounded-lg">
                                 @category.Name
                             </a>
                     </li>
