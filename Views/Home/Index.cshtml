@@ -8,8 +8,8 @@
             <main class="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
                 <div class="sm:text-center lg:text-left">
                     <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
-                        <span class="block xl:inline">Připrav se na boj</span>
-                        <span class="block text-indigo-600 xl:inline">s Muay Thai vybavením</span>
+                        <span class="block xl:inline">Vybav se</span>
+                        <span class="block text-indigo-600 xl:inline"> profi Muay Thai vybavením</span>
                     </h1>
                     <p class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
                         Nakup kvalitní vybavení pro Muay Thai - rukavice, chrániče, bandáže a další doplňky. Buď připraven na každý zápas!
@@ -46,25 +46,39 @@
             </p>
         </div>
 
-        <div class="mt-10">
+        <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3 mt-10">
             @model List<Product>
 
-            <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3">
-                @foreach (var product in Model)
-                {
-                    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-                        <img class="mt-7 max-h-[350px] w-full object-contain" src="@product.ImgUrl" alt="@product.Name">
-                        <div class="p-6">
-                            <h3 class="font-semibold text-lg text-gray-900">@product.Name</h3>
-                            <p class="mt-2 text-gray-600">@product.Description</p>
+            @foreach (var product in Model)
+            {
+                <div class="bg-white shadow-lg rounded-lg overflow-hidden px-2 hover:shadow-xl transition-shadow">
+                    <img class="mt-7 h-[300px] w-full object-scale-down" src="@product.ImgUrl" alt="@product.Name">
+                    <div class="p-6">
+                        <a class=""><h3 class="font-semibold text-lg text-gray-900 cursor-pointer hover:underline">@product.Name</h3></a>
+                        <p class="mt-2 text-gray-600">
+                            @(product.Description.Length > 46 ? product.Description.Substring(0, 43) + "..." : product.Description)
+                        </p>
+                        <div class="flex justify-between">
                             <div class="mt-4">
                                 <span class="text-indigo-600 font-bold">@product.Price Kč</span>
                             </div>
-                            <a href="#" class="block mt-4 text-indigo-600 hover:underline">Více informací</a>
+                            <div class="mt-4 flex flex-col">
+                                <p class="text-sm font-medium">Dostupné velikosti:</p>
+                                <div class="flex flex-wrap gap-2 mt-2">
+                                    @foreach (var variant in product.Variants)
+                                    {
+                                        <span class="w-8 h-8 flex items-center p-2 justify-center bg-gray-200 text-xs font-medium rounded-lg">
+                                            @variant.Size
+                                        </span>
+                                    }
+                                </div>
+                            </div>
                         </div>
                     </div>
-                }
-            </div>
+                </div>
+            }
+
+            
         </div>
     </div>
 </div>
