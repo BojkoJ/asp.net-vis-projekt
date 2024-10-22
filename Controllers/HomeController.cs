@@ -18,12 +18,14 @@ namespace Projekt.Controllers
 
         public IActionResult Index()
         {
-            var gloves = _db.GetProductsByCategory(1); // Rukavice
-            var wraps = _db.GetProductsByCategory(2); // Bandáže
-            var protectors = _db.GetProductsByCategory(3); // Chrániče
+            var gloves = _db.GetProductsByCategory(1).FirstOrDefault(); // Rukavice
+            var wraps = _db.GetProductsByCategory(2).FirstOrDefault(); // Bandáže
+            var protectors = _db.GetProductsByCategory(3).FirstOrDefault(); // Chrániče
 
             // Kombinuj produkty z každé kategorie
-            var products = gloves.Concat(wraps).Concat(protectors).ToList();
+            var products = new List<Product> { gloves, wraps, protectors }
+                .Where(p => p != null)
+                .ToList();
 
             return View(products);
         }

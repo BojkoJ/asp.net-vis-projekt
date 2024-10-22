@@ -1,0 +1,97 @@
+@model Projekt.Models.CategoryProductsViewModel
+
+
+
+<div class="container mx-auto py-8 h-[90vh]">
+    <h2 class="text-3xl font-extrabold mb-11 w-full text-center">Muay Thai @Model.CategoryName</h2>
+
+    <!-- Toast notifikace -->
+    @if (TempData["NoResults"] != null)
+    {
+        <div id="toast" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-yellow-100 border border-yellow-400 text-yellow-700 px-6 py-3 rounded-lg shadow-lg z-50 w-[500px]" role="alert">
+            <span class="block sm:inline">@TempData["NoResults"]</span>
+            <span class="absolute top-0 bottom-0 right-0 px-4 py-3 cursor-pointer" onclick="hideToast()">
+                <svg class="fill-current h-6 w-6 text-yellow-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path d="M14.348 14.849a1 1 0 01-1.414 0L10 11.414l-2.936 2.935a1 1 0 01-1.414-1.414l2.936-2.935-2.936-2.936a1 1 0 011.414-1.414L10 8.586l2.936-2.936a1 1 0 011.414 1.414L11.414 10l2.936 2.936a1 1 0 010 1.414z" />
+                </svg>
+            </span>
+        </div>
+    }
+
+    <div class="flex justify-start gap-x-5">
+        <!-- Filtr podle velikostí -->
+        <form method="get" class="mb-4 mt-10 w-[17%]">
+            <input type="hidden" name="categoryId" value="@Model.CategoryId" />
+            <label for="sizeFilter" class="block mb-2 text-gray-700">Filtrovat podle velikosti:</label>
+            @foreach (var size in Model.AvailableSizes)
+            {
+                <div>
+                    <input type="checkbox" name="selectedSizes" value="@size" id="size_@size" 
+                        @(Model.SelectedSizes != null && Model.SelectedSizes.Contains(size) ? "checked" : "") />
+                    <label for="size_@size">@size</label>
+                </div>
+            }
+            <div class="flex gap-x-2">
+                <button type="submit" class="text-sm font-medium mt-4 bg-indigo-600 text-white px-3 py-2 rounded-lg hover:bg-indigo-700">Filtrovat</button>
+                
+                <!-- Tlačítko pro zrušení filtrů jako odkaz -->
+                <a href="@Url.Action("ProductsByCategory", new { categoryId = Model.CategoryId })"
+                class="text-sm font-medium mt-4 bg-gray-600/50 text-white px-3 flex py-2 rounded-lg hover:bg-gray-600/40">
+                    <div class="h-full flex items-center">
+                        <svg class=" h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path d="M14.348 14.849a1 1 0 01-1.414 0L10 11.414l-2.936 2.935a1 1 0 01-1.414-1.414l2.936-2.935-2.936-2.936a1 1 0 011.414-1.414L10 8.586l2.936-2.936a1 1 0 011.414 1.414L11.414 10l2.936 2.936a1 1 0 010 1.414z" />
+                        </svg>
+                    </div>
+                    <span class="ml-1">Zrušit filtry</span>
+                </a>
+            </div>
+        </form>
+
+
+
+            <!-- Zobrazení produktů -->
+        <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3 w-[83%]">
+            @foreach (var product in Model.Products)
+            {
+                <div class="bg-white shadow-lg rounded-lg overflow-hidden px-2 hover:shadow-xl transition-shadow">
+                    <img class="mt-7 h-[300px] w-full object-scale-down" src="@product.ImgUrl" alt="@product.Name">
+                    <div class="p-6">
+                        <h3 class="font-semibold text-lg text-gray-900">@product.Name</h3>
+                        <p class="mt-2 text-gray-600">
+                            @(product.Description.Length > 46 ? product.Description.Substring(0, 43) + "..." : product.Description)
+                        </p>
+                        <div class="flex justify-between">
+                            <div class="mt-4">
+                                <span class="text-indigo-600 font-bold">@product.Price Kč</span>
+                            </div>
+                            <div class="mt-4 flex flex-col">
+                                <p class="text-sm font-medium">Dostupné velikosti:</p>
+                                <div class="flex flex-wrap gap-2 mt-2">
+                                    @foreach (var variant in product.Variants)
+                                    {
+                                        <span class="w-8 h-8 flex items-center p-2 justify-center bg-gray-200 text-xs font-medium rounded-lg">
+                                            @variant.Size
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#" class="block mt-4 text-indigo-600 hover:underline">Více informací</a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+    
+
+<script>
+    function hideToast() {
+        document.getElementById("toast").style.display = "none";
+    }
+
+    // Automatické schování toastu po 5 vteřinách
+    setTimeout(() => {
+        hideToast();
+    }, 5000);
+</script>
