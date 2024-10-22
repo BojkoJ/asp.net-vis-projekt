@@ -67,17 +67,10 @@ namespace Projekt.Controllers
                     break;
             }
 
-            Console.WriteLine(selectedColors);
-            Console.WriteLine(selectedSizes);
-
             // Mapování vybraných barev na diakritické verze
             if (selectedColors != null && selectedColors.Count > 0)
             {
-                Debug.WriteLine(
-                    "Vybrané barvy před mapováním: " + string.Join(", ", selectedColors)
-                );
                 selectedColors = selectedColors.Select(color => MapColor(color)).ToList();
-                Debug.WriteLine("Vybrané barvy po mapování: " + string.Join(", ", selectedColors));
             }
 
             // Filtrování podle velikostí
@@ -91,7 +84,6 @@ namespace Projekt.Controllers
             // Filtrování podle barev
             if (selectedColors != null && selectedColors.Count > 0)
             {
-                Debug.WriteLine("Filtrujeme podle barev: " + string.Join(", ", selectedColors));
                 products = products
                     .Where(p => p.Variants.Any(v => selectedColors.Contains(v.Color)))
                     .ToList();
