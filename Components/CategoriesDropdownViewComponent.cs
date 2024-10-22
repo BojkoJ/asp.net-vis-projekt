@@ -6,9 +6,9 @@ namespace Projekt.Components
 {
     public class CategoriesDropdownViewComponent : ViewComponent
     {
-        private readonly DatabaseManager _db;
+        private readonly ProductManager _db;
 
-        public CategoriesDropdownViewComponent(DatabaseManager db)
+        public CategoriesDropdownViewComponent(ProductManager db)
         {
             _db = db;
         }

@@ -4,11 +4,11 @@ using Projekt.Models;
 
 namespace Projekt.Services
 {
-    public class DatabaseManager
+    public class ProductManager
     {
         private readonly string _connectionString;
 
-        public DatabaseManager(string connectionString)
+        public ProductManager(string connectionString)
         {
             _connectionString = connectionString;
         }

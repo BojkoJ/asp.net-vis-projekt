@@ -19,8 +19,8 @@ namespace Projekt
                     "Connection string 'DefaultConnection' not found."
                 );
 
-            // Registrace DatabaseManager s connection stringem
-            builder.Services.AddSingleton(new DatabaseManager(connectionString));
+            // Registrace ProductManager s connection stringem
+            builder.Services.AddSingleton(new ProductManager(connectionString));
 
             // MVC a další služby
             builder.Services.AddControllersWithViews();

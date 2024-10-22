@@ -7,10 +7,10 @@ namespace Projekt.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly DatabaseManager _db;
+        private readonly ProductManager _db;
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(DatabaseManager db, ILogger<HomeController> logger)
+        public HomeController(ProductManager db, ILogger<HomeController> logger)
         {
             _db = db;
             _logger = logger;

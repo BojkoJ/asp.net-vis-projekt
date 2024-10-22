@@ -1,15 +1,17 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Projekt.Models;
+using Projekt.Models.ViewModels;
 using Projekt.Services;
 
 namespace Projekt.Controllers
 {
     public class ProductsController : Controller
     {
-        private readonly DatabaseManager _db;
+        // ---------------------------------------------- Table Data Gateway BEGIN ----------------------------------------------
+        private readonly ProductManager _db;
 
-        public ProductsController(DatabaseManager db)
+        public ProductsController(ProductManager db)
         {
             _db = db;
         }
@@ -128,5 +130,49 @@ namespace Projekt.Controllers
                 _ => color,
             };
         }
+
+        // ---------------------------------------------- Table Data Gateway END ----------------------------------------------
+        // ---------------------------------------------- Row Data Gateway BEGIN ----------------------------------------------
+        private readonly string _connectionString;
+
+        /*public ProductsController(string connectionString)
+        {
+            _connectionString = connectionString;
+        }*/
+
+        [HttpGet]
+        public IActionResult ProductDetails(int productId)
+        {
+            var productGateway = new ProductRowGateway(_connectionString);
+            productGateway.Load(productId);
+
+            var productViewModel = new ProductViewModel
+            {
+                ProductId = productGateway.ProductId,
+                Name = productGateway.Name,
+                Description = productGateway.Description,
+                Price = productGateway.Price,
+                ImgUrl = productGateway.ImgUrl,
+            };
+
+            return View(productViewModel);
+        }
+
+        [HttpPost]
+        public IActionResult SaveProduct(ProductViewModel model)
+        {
+            var productGateway = new ProductRowGateway(_connectionString)
+            {
+                ProductId = model.ProductId,
+                Name = model.Name,
+                Description = model.Description,
+                Price = model.Price,
+                ImgUrl = model.ImgUrl,
+            };
+
+            productGateway.Save();
+            return RedirectToAction("ProductDetails", new { productId = productGateway.ProductId });
+        }
+        // ---------------------------------------------- Row Data Gateway END ----------------------------------------------
     }
 }
