@@ -1,0 +1,18 @@
+{
+	"[cpp]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"editor.formatOnSave": true,
+	"editor.formatOnPaste": true,
+	"[csharp]": {
+		"editor.defaultFormatter": "csharpier.csharpier-vscode"
+	},
+	"[razor]": {
+		"editor.defaultFormatter": "ms-dotnettools.csdevkit",
+		"editor.formatOnSave": true
+	},
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"editor.defaultFormatter": "esbenp.prettier-vscode"
+}

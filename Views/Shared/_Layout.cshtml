@@ -10,12 +10,45 @@
 
 <body class="bg-gray-100 text-gray-900">
     <header>
-        <nav class="bg-gray-800 p-4">
+        <nav class="bg-gray-800 p-4 z-10">
             <div class="container mx-auto flex justify-between items-center">
-                <a class="text-white text-lg font-bold" href="#">Projekt</a>
-                <ul class="flex space-x-4">
-                    <li><a class="text-white hover:text-gray-300" href="/">Home</a></li>
-                    <li><a class="text-white hover:text-gray-300" href="/Home/Privacy">Privacy</a></li>
+                <!-- Logo -->
+                <a class="text-white text-lg font-bold" href="#">CzechMuayThaiStore</a>
+                
+                <!-- Navigační odkazy -->
+                <ul class="flex space-x-6 items-center">
+                    <!-- Dropdown menu pro produkty -->
+                    @await Component.InvokeAsync("CategoriesDropdown")
+
+                    <!-- Kontakty -->
+                    <li>
+                        <a href="#" class="text-white hover:text-gray-300">Kontakty</a>
+                    </li>
+
+                    <!-- Pro Zaměstnance -->
+                    <li>
+                        <a href="#" class="text-white hover:text-gray-300">Pro Zaměstnance</a>
+                    </li>
+
+                    <!-- Košík s ikonou a počtem produktů -->
+                    <li class="relative">
+                        <a href="#" class="text-white hover:text-gray-300 flex items-center">
+                            <!-- Ikona košíku -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l1.38-6.58a1 1 0 00-.97-1.42H6.21l-.97-4.58H3" />
+                                <circle cx="9" cy="20" r="1" />
+                                <circle cx="19" cy="20" r="1" />
+                            </svg>
+
+                            <!-- Počet produktů -->
+                            <span class="top-0 right-0 inline-block w-5 h-5 bg-red-500 text-white text-center text-xs rounded-full">3</span>
+                        </a>
+                    </li>
+
+                    <!-- Účet -->
+                    <li>
+                        <a href="#" class="text-white hover:text-gray-300">Účet</a>
+                    </li>
                 </ul>
             </div>
         </nav>

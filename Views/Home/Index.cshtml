@@ -45,50 +45,32 @@
                 Nabízíme široký sortiment produktů pro Muay Thai. Ať už jsi začátečník nebo pokročilý, u nás najdeš to nejlepší vybavení.
             </p>
         </div>
+
         <div class="mt-10">
+            @model List<Product>
+
             <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3">
-                <!-- Ukázka produktu -->
-                <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-                    <img class="mt-7 max-h-[350px] w-full object-contain" src="https://fairtexstore.com/cdn/shop/products/41JBdRplkSL.jpg?v=1633962236&width=580" alt="Rukavice Muay Thai">
-                    <div class="p-6">
-                        <h3 class="font-semibold text-lg text-gray-900">Rukavice Muay Thai</h3>
-                        <p class="mt-2 text-gray-600">Profesionální rukavice pro Muay Thai, které ti zajistí komfort a bezpečí během boje.</p>
-                        <div class="mt-4">
-                            <span class="text-indigo-600 font-bold">999 Kč</span>
+                @foreach (var product in Model)
+                {
+                    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                        <img class="mt-7 max-h-[350px] w-full object-contain" src="@product.ImgUrl" alt="@product.Name">
+                        <div class="p-6">
+                            <h3 class="font-semibold text-lg text-gray-900">@product.Name</h3>
+                            <p class="mt-2 text-gray-600">@product.Description</p>
+                            <div class="mt-4">
+                                <span class="text-indigo-600 font-bold">@product.Price Kč</span>
+                            </div>
+                            <a href="#" class="block mt-4 text-indigo-600 hover:underline">Více informací</a>
                         </div>
-                        <a href="#" class="block mt-4 text-indigo-600 hover:underline">Více informací</a>
                     </div>
-                </div>
-                <!-- Další produkty -->
-                <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-                    <img class="mt-7 max-h-[350px] w-full object-contain" src="https://www.thefightfactory.com.au/cdn/shop/products/fairtex-hand-wraps-accessories-fairtex-thailand-muay-thai-boxing-hand-wraps-30221078003755.jpg?v=1721229017" alt="Bandáže Muay Thai">
-                    <div class="p-6">
-                        <h3 class="font-semibold text-lg text-gray-900">Bandáže Muay Thai</h3>
-                        <p class="mt-2 text-gray-600">Ochrana a podpora pro tvoje ruce, ideální pro trénink i zápasy.</p>
-                        <div class="mt-4">
-                            <span class="text-indigo-600 font-bold">299 Kč</span>
-                        </div>
-                        <a href="#" class="block mt-4 text-indigo-600 hover:underline">Více informací</a>
-                    </div>
-                </div>
-                <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-                    <img class="mt-7 max-h-[350px] w-full object-contain" src="https://www.sportheavy.eu/tuotekuvat/600x600/ggl-12mu400_1304_6ae_copy8.jpg" alt="Chrániče holení">
-                    <div class="p-6">
-                        <h3 class="font-semibold text-lg text-gray-900">Chrániče holení</h3>
-                        <p class="mt-2 text-gray-600">Zajisti si ochranu během tréninku a zápasů s našimi kvalitními chrániči holení.</p>
-                        <div class="mt-4">
-                            <span class="text-indigo-600 font-bold">699 Kč</span>
-                        </div>
-                        <a href="#" class="block mt-4 text-indigo-600 hover:underline">Více informací</a>
-                    </div>
-                </div>
+                }
             </div>
         </div>
     </div>
 </div>
 
 <!-- Sekce "O nás" -->
-<div id="about-us" class="bg-white py-12">
+<div id="about-us" class="bg-white py-12 mt-10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 class="text-3xl font-extrabold text-gray-900">O Nás</h2>
         <p class="mt-4 text-lg text-gray-600">

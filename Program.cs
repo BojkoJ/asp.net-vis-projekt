@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Data.SqlClient;
+using Projekt.Services; // pÅ™idÃ¡no
 
 namespace Projekt
 {
@@ -12,14 +12,17 @@ namespace Projekt
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Získání pøipojovacího øetìzce
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            // ZÃ­skÃ¡nÃ­ connection stringu
+            var connectionString =
+                builder.Configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException(
+                    "Connection string 'DefaultConnection' not found."
+                );
 
-            // Zaregistrování pøipojovacího øetìzce pro další použití
-            builder.Services.AddSingleton(new SqlConnection(connectionString));
+            // Registrace DatabaseManager s connection stringem
+            builder.Services.AddSingleton(new DatabaseManager(connectionString));
 
-            // Pøidání MVC služeb
+            // MVC a dalÅ¡Ã­ sluÅ¾by
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
@@ -37,14 +40,13 @@ namespace Projekt
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
-
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Home}/{action=Index}/{id?}"
+            );
 
             app.Run();
         }
