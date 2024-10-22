@@ -7,5 +7,7 @@ namespace Projekt.Models
         public List<Product> Products { get; set; }
         public List<string> AvailableSizes { get; set; } // Seznam všech dostupných velikostí
         public List<string> SelectedSizes { get; set; } // Vybrané velikosti
+        public List<string> AvailableColors { get; set; } // Seznam všech dostupných barev
+        public List<string> SelectedColors { get; set; } // Vybrané barvy
     }
 }

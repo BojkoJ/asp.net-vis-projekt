@@ -1,5 +1,5 @@
 @model Projekt.Models.CategoryProductsViewModel
-
+@using Projekt.Helpers
 
 
 <div class="container mx-auto py-8 h-[90vh]">
@@ -19,38 +19,61 @@
     }
 
     <div class="flex justify-start gap-x-5">
-        <!-- Filtr podle velikostí -->
-        <form method="get" class="mb-4 mt-10 w-[17%]">
-            <input type="hidden" name="categoryId" value="@Model.CategoryId" />
-            <label for="sizeFilter" class="block mb-4 text-gray-700 font-semibold">Filtrovat podle velikosti:</label>
-            @foreach (var size in Model.AvailableSizes)
-            {
-                <div class="flex items-center mb-2">
-                    <input type="checkbox" name="selectedSizes" value="@size" id="size_@size" 
-                        @(Model.SelectedSizes != null && Model.SelectedSizes.Contains(size) ? "checked" : "")
-                        class="w-4 h-4 text-indigo-600 bg-indigo-100 rounded-lg  focus:ring-2 hover:bg-indigo-200 transition duration-200 ease-in-out checked:bg-indigo-600" />
-                    <label for="size_@size" class="ml-2 text-gray-700 text-sm font-medium hover:text-indigo-700">@size</label>
-                </div>
-            }
+        <div class="flex flex-col">
+            <!-- První formulář: Filtr podle velikostí -->
+            <form id="sizeForm" method="get" class="mb-4 mt-10 w-[17%]">
+                <input type="hidden" name="categoryId" value="@Model.CategoryId" />
+
+                <label for="sizeFilter" class="block mb-4 text-gray-700 font-semibold">Filtrovat:</label>
+                @foreach (var size in Model.AvailableSizes)
+                {
+                    <div class="flex items-center mb-2">
+                        <input type="checkbox" name="selectedSizes" value="@size" id="size_@size" 
+                            @(Model.SelectedSizes != null && Model.SelectedSizes.Contains(size) ? "checked" : "")
+                            class="w-4 h-4 text-indigo-600 bg-indigo-100 rounded-lg focus:ring-2 hover:bg-indigo-200 transition duration-200 ease-in-out checked:bg-indigo-600" />
+                        <label for="size_@size" class="ml-2 text-gray-700 text-sm font-medium hover:text-indigo-700">@size</label>
+                    </div>
+                }
+            </form>
+
+            <!-- Separárot -->
+            <hr class="border-gray-400 border-[1px]">
+
+            <!-- Druhý formulář: Filtr podle barvy -->
+            <form id="colorForm" method="get" class="mb-4 mt-5 w-[17%]">
+                @foreach (var color in Model.AvailableColors)
+                {
+                    <div class="flex items-center mb-2">
+                        <input type="checkbox" name="selectedColors" value="@color" id="color_@color"
+                            @(Model.SelectedColors != null && Model.SelectedColors.Contains(color) ? "checked" : "")
+                            class="w-4 h-4 text-indigo-600 bg-indigo-100 rounded-lg focus:ring-2 hover:bg-indigo-200 transition duration-200 ease-in-out checked:bg-indigo-600" />
+                        <label for="color_@color" class="ml-2 text-gray-700 text-sm font-medium hover:text-indigo-700">@color</label>
+                    </div>
+                }
+            </form>
+
+            <!-- Tlačítka pro potvrzení a zrušení -->
             <div class="flex gap-x-2">
-                <button type="submit" class="text-sm font-medium mt-4 bg-indigo-600 text-white px-3 py-2 rounded-lg hover:bg-indigo-700">Filtrovat</button>
-                
-                <!-- Tlačítko pro zrušení filtrů jako odkaz -->
+                <!-- Společné tlačítko pro potvrzení (spojí oba formuláře a odešle je) -->
+                <button id="filterSubmit" class="text-sm font-medium mt-4 bg-indigo-600 text-white px-3 py-2 rounded-lg hover:bg-indigo-700">Filtrovat</button>
+
+                <!-- Tlačítko pro zrušení filtrů -->
                 <a href="@Url.Action("ProductsByCategory", new { categoryId = Model.CategoryId })"
                 class="text-sm font-medium mt-4 bg-gray-600/50 text-white px-3 flex py-2 rounded-lg hover:bg-gray-600/40">
                     <div class="h-full flex items-center">
-                        <svg class=" h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                             <path d="M14.348 14.849a1 1 0 01-1.414 0L10 11.414l-2.936 2.935a1 1 0 01-1.414-1.414l2.936-2.935-2.936-2.936a1 1 0 011.414-1.414L10 8.586l2.936-2.936a1 1 0 011.414 1.414L11.414 10l2.936 2.936a1 1 0 010 1.414z" />
                         </svg>
                     </div>
                     <span class="ml-1">Zrušit filtry</span>
                 </a>
             </div>
-        </form>
+        </div>
 
 
 
-            <!-- Zobrazení produktů -->
+
+        <!-- Zobrazení produktů -->
         <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3 w-[83%]">
             @foreach (var product in Model.Products)
             {
@@ -100,4 +123,76 @@
     setTimeout(() => {
         hideToast();
     }, 5000);
+</script>
+
+<!-- JavaScript pro spojení obou formulářů a odeslání -->
+<script>
+    // Funkce pro odstranění diakritiky
+    function removeDiacritics(text) {
+        return text
+            .replace(/Č/g, 'C')
+            .replace(/č/g, 'c')
+            .replace(/Á/g, 'A')
+            .replace(/á/g, 'a')
+            .replace(/É/g, 'E')
+            .replace(/é/g, 'e')
+            .replace(/Í/g, 'I')
+            .replace(/í/g, 'i')
+            .replace(/Ó/g, 'O')
+            .replace(/ó/g, 'o')
+            .replace(/Ú/g, 'U')
+            .replace(/ú/g, 'u')
+            .replace(/Ý/g, 'Y')
+            .replace(/ý/g, 'y')
+            .replace(/Ž/g, 'Z')
+            .replace(/ž/g, 'z')
+            .replace(/Ř/g, 'R')
+            .replace(/ř/g, 'r')
+            .replace(/Š/g, 'S')
+            .replace(/š/g, 's');
+    }
+
+    document.getElementById('filterSubmit').addEventListener('click', function (event) {
+        event.preventDefault(); // Zabráníme výchozímu chování tlačítka (odeslání formuláře)
+
+        // Vytvoříme nový formulář, který spojí oba formuláře
+        let form = document.createElement('form');
+        form.method = 'get';
+        form.action = window.location.pathname; // Aktuální URL cesty
+
+        // Přidáme hodnoty z prvního formuláře (velikosti)
+        let sizeFormElements = document.getElementById('sizeForm').elements;
+        for (let i = 0; i < sizeFormElements.length; i++) {
+            if (sizeFormElements[i].checked) {
+                let input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = sizeFormElements[i].name;
+                input.value = sizeFormElements[i].value;
+                form.appendChild(input);
+            }
+        }
+
+        // Přidáme hodnoty z druhého formuláře (barvy) a odstraníme diakritiku
+        let colorFormElements = document.getElementById('colorForm').elements;
+        for (let i = 0; i < colorFormElements.length; i++) {
+            if (colorFormElements[i].checked) {
+                let input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = colorFormElements[i].name;
+                input.value = removeDiacritics(colorFormElements[i].value); // Odstranění diakritiky
+                form.appendChild(input);
+            }
+        }
+
+        // Přidáme hidden input pro categoryId
+        let categoryIdInput = document.createElement('input');
+        categoryIdInput.type = 'hidden';
+        categoryIdInput.name = 'categoryId';
+        categoryIdInput.value = '@Model.CategoryId';
+        form.appendChild(categoryIdInput);
+
+        // Odeslání formuláře
+        document.body.appendChild(form);
+        form.submit();
+    });
 </script>
