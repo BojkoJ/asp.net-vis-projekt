@@ -141,38 +141,55 @@ namespace Projekt.Controllers
         }*/
 
         [HttpGet]
-        public IActionResult ProductDetails(int productId)
+        public IActionResult ProductsByCategory_RowGateway(
+            [FromQuery] int categoryId,
+            [FromQuery] List<string> selectedSizes = null,
+            [FromQuery] List<string> selectedColors = null
+        )
         {
-            var productGateway = new ProductRowGateway(_connectionString);
-            productGateway.Load(productId);
+            var products = ProductRowGateway.GetProductsByCategory(categoryId, _connectionString);
 
-            var productViewModel = new ProductViewModel
+            // Filtrování podle velikostí
+            if (selectedSizes != null && selectedSizes.Count > 0)
             {
-                ProductId = productGateway.ProductId,
-                Name = productGateway.Name,
-                Description = productGateway.Description,
-                Price = productGateway.Price,
-                ImgUrl = productGateway.ImgUrl,
+                products = products
+                    .Where(p => p.Variants.Any(v => selectedSizes.Contains(v.Size)))
+                    .ToList();
+            }
+
+            // Filtrování podle barev
+            if (selectedColors != null && selectedColors.Count > 0)
+            {
+                products = products
+                    .Where(p => p.Variants.Any(v => selectedColors.Contains(v.Color)))
+                    .ToList();
+            }
+
+            // Vytvoříme ViewModel pro zobrazení produktů a filtrů
+            var viewModel = new CategoryProductsViewModel
+            {
+                CategoryId = categoryId,
+                CategoryName = products.Count > 0 ? products[0].Name : "Neznámá kategorie",
+                Products = products
+                    .Select(p => new Product
+                    {
+                        ProductId = p.ProductId,
+                        Name = p.Name,
+                        Description = p.Description,
+                        Price = p.Price,
+                        ImgUrl = p.ImgUrl,
+                        Variants = p.Variants,
+                    })
+                    .ToList(),
+                AvailableSizes = selectedSizes,
+                SelectedSizes = selectedSizes,
+                AvailableColors = selectedColors,
+                SelectedColors = selectedColors,
             };
 
-            return View(productViewModel);
+            return View(viewModel);
         }
 
-        [HttpPost]
-        public IActionResult SaveProduct(ProductViewModel model)
-        {
-            var productGateway = new ProductRowGateway(_connectionString)
-            {
-                ProductId = model.ProductId,
-                Name = model.Name,
-                Description = model.Description,
-                Price = model.Price,
-                ImgUrl = model.ImgUrl,
-            };
-
-            productGateway.Save();
-            return RedirectToAction("ProductDetails", new { productId = productGateway.ProductId });
-        }
         // ---------------------------------------------- Row Data Gateway END ----------------------------------------------
     }
 }
