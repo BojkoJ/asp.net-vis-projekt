@@ -67,6 +67,94 @@ namespace Projekt.Services
             return products;
         }
 
+        public List<Product> GetProductsByCategoryFilter(
+            int categoryId,
+            List<string> selectedSizes = null,
+            List<string> selectedColors = null,
+            int limit = 6,
+            int offset = 0
+        )
+        {
+            List<Product> products = new List<Product>();
+
+            using (var connection = new NpgsqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                // Základní SQL dotaz s JOIN na varianty
+                string sql =
+                    @"SELECT DISTINCT p.""productid"", p.""name"", p.""description"", p.""price"", p.""imgurl"", c.""categoryid"", c.""name"" AS CategoryName
+              FROM ""products"" p
+              JOIN ""categories"" c ON p.""categoryid"" = c.""categoryid""
+              JOIN ""productvariants"" v ON p.""productid"" = v.""productid""
+              WHERE p.""categoryid"" = @categoryid";
+
+                // Dynamicky přidáme filtr pro velikosti, pokud je nastaven
+                if (selectedSizes != null && selectedSizes.Count > 0)
+                {
+                    sql += @" AND v.""size"" = ANY(@selectedSizes)";
+                }
+
+                // Dynamicky přidáme filtr pro barvy, pokud je nastaven
+                if (selectedColors != null && selectedColors.Count > 0)
+                {
+                    sql += @" AND v.""color"" = ANY(@selectedColors)";
+                }
+
+                // Přidáme LIMIT a OFFSET
+                sql += " LIMIT @Limit OFFSET @Offset";
+
+                using (var command = new NpgsqlCommand(sql, connection))
+                {
+                    // Přidáme parametry
+                    command.Parameters.AddWithValue("categoryid", categoryId);
+                    command.Parameters.AddWithValue("Limit", limit);
+                    command.Parameters.AddWithValue("Offset", offset);
+
+                    // Přidáme parametry pro filtry, pokud jsou nastaveny
+                    if (selectedSizes != null && selectedSizes.Count > 0)
+                    {
+                        command.Parameters.AddWithValue("selectedSizes", selectedSizes.ToArray());
+                    }
+                    if (selectedColors != null && selectedColors.Count > 0)
+                    {
+                        command.Parameters.AddWithValue("selectedColors", selectedColors.ToArray());
+                    }
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var product = new Product
+                            {
+                                ProductId = reader.GetInt32(0),
+                                Name = reader.GetString(1),
+                                Description = reader.GetString(2),
+                                Price = reader.GetDecimal(3),
+                                ImgUrl = reader.GetString(4),
+                                Category = new Category
+                                {
+                                    CategoryId = reader.GetInt32(5),
+                                    Name = reader.GetString(6),
+                                },
+                                Variants = new List<ProductVariant>(), // Inicializace prázdné kolekce variant
+                            };
+
+                            products.Add(product);
+                        }
+                    }
+                }
+            }
+
+            // Načteme varianty pro každý produkt zvlášť
+            foreach (var product in products)
+            {
+                product.Variants = GetVariantsByProductId(product.ProductId);
+            }
+
+            return products;
+        }
+
         public List<ProductVariant> GetVariantsByProductId(int productId)
         {
             List<ProductVariant> variants = new List<ProductVariant>();

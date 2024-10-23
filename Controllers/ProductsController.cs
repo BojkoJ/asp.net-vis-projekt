@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Projekt.DataMappers;
@@ -38,16 +39,6 @@ namespace Projekt.Controllers
             // Zajistíme, že nenačteme více než zbývající počet produktů
             int actualLimit = Math.Min(limit, maxProducts - offset);
 
-            // Načteme produkty pro zvolenou kategorii s použitím offsetu a limitu
-            var products = _db.GetProductsByCategory(categoryId, actualLimit, offset); // Použití actualLimit
-
-            // Pokud jde o AJAX volání, vrátíme pouze partial view
-            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-            {
-                return PartialView("_ProductListPartial", products);
-            }
-            else { }
-
             // Definujeme pevné velikosti a barvy pro každou kategorii
             List<string> availableSizes = new List<string>();
             List<string> availableColors = new List<string>();
@@ -62,6 +53,7 @@ namespace Projekt.Controllers
                         "Bílá",
                         "Modrá",
                         "Červená",
+                        "Fialová",
                         "Vícebarevné",
                     };
                     break;
@@ -97,27 +89,60 @@ namespace Projekt.Controllers
                 selectedColors = selectedColors.Select(color => MapColor(color)).ToList();
             }
 
-            // Filtrování podle velikostí
-            if (selectedSizes != null && selectedSizes.Count > 0)
+            // Načteme produkty buď s filtry, nebo bez filtrů
+            List<Product> products;
+            if (
+                (selectedSizes != null && selectedSizes.Count > 0)
+                || (selectedColors != null && selectedColors.Count > 0)
+            )
             {
-                products = products
-                    .Where(p => p.Variants.Any(v => selectedSizes.Contains(v.Size)))
-                    .ToList();
+                Console.WriteLine("Filtruji podle filtrů");
+
+                // Kontrola, zda je selectedSizes null před použitím ToArray
+                string sizes =
+                    selectedSizes != null
+                        ? string.Join(",", selectedSizes.ToArray())
+                        : "žádné velikosti";
+
+                // Kontrola, zda je selectedColors null před použitím ToArray
+                string colors =
+                    selectedColors != null
+                        ? string.Join(",", selectedColors.ToArray())
+                        : "žádné barvy";
+
+                Console.WriteLine("Zadané filtry: " + sizes + " " + colors);
+
+                // Voláme metodu s filtry
+                products = _db.GetProductsByCategoryFilter(
+                    categoryId,
+                    selectedSizes,
+                    selectedColors,
+                    actualLimit,
+                    offset
+                );
+            }
+            else
+            {
+                Console.WriteLine("Získávám produkty bez filtrů");
+                // Voláme metodu bez filtrů
+                products = _db.GetProductsByCategory(categoryId, actualLimit, offset);
             }
 
-            // Filtrování podle barev
-            if (selectedColors != null && selectedColors.Count > 0)
+            // Pokud nebyly nalezeny žádné produkty podle filtrů
+            if (products.Count == 0 && offset == 0)
             {
-                products = products
-                    .Where(p => p.Variants.Any(v => selectedColors.Contains(v.Color)))
-                    .ToList();
-            }
+                // Načteme všechny produkty bez filtrů, pokud první pokus nenalezl produkty
+                products = _db.GetProductsByCategory(categoryId, actualLimit, 0);
 
-            // Pokud nebyly nalezeny žádné produkty, zobrazíme toast notifikaci
-            if (products.Count == 0 && offset == 0) // Pouze pokud jsme na začátku, jinak načítáme dál
-            {
+                // Zobrazíme toast notifikaci s informací
                 TempData["NoResults"] =
                     "Nebyly nalezeny žádné produkty odpovídající vašim kritériím.";
+            }
+
+            // Pokud jde o AJAX volání, vrátíme pouze partial view
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView("_ProductListPartial", products);
             }
 
             var categoryName = products.Count > 0 ? products[0].Category.Name : "Neznámá kategorie";
@@ -147,6 +172,7 @@ namespace Projekt.Controllers
                 "Cervena" => "Červená",
                 "Vicebarevne" => "Vícebarevné",
                 "Zelena" => "Zelená",
+                "Fialova" => "Fialová",
                 "Tyrkysova" => "Tyrkysová",
                 _ => color,
             };

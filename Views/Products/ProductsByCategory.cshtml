@@ -4,7 +4,7 @@
     ViewData["Title"] = "Produkty - " + @Model.CategoryName;
 }
 
-<div class="container mx-auto py-8 h-[90vh]">
+<div class="container mx-auto py-8 h-[125vh] main-page">
     <h2 class="text-3xl font-extrabold mb-16 w-full text-center mt-10">Muay Thai @Model.CategoryName</h2>
 
     <!-- Toast notifikace -->
@@ -178,21 +178,50 @@
     const categoryId = '@Model.CategoryId'; // Správně převeď Razor do JavaScriptu jako string
     let lastScrollY = window.scrollY; // Uložíme počáteční pozici scrollování
 
+    mainPageDiv = document.querySelector('.main-page');
+
     let times = 1;
 
+    let timesHelp = 1;
+
+    let scrolled = 0;
+    let scrollBound = 0;
+
     window.addEventListener('scroll', () => {
-        // Zkontrolujeme, zda uživatel scrolloval alespoň o 200px dolů
-        if ((window.scrollY - lastScrollY) > (300 * times)) {
-            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight && totalLoaded < maxProducts) {
-                loadMoreProducts();
-                lastScrollY = window.scrollY; // Zaktualizujeme poslední známou pozici scrollu
-            }
-        }
+        // Zkontrolujeme, zda uživatel scrolloval alespoň o 320px * (fetchnuto stránek produktů * 2.5) dolů
+        scrolled = (window.scrollY - lastScrollY);
+        scrollBound = (320 * times);
+        
+        if ((totalLoaded < maxProducts) && (scrolled > scrollBound)) {
+            loadMoreProducts();
+            console.log(scrolled);
+            console.log(scrollBound);
+            lastScrollY = window.scrollY; // Zaktualizujeme poslední známou pozici scrollu
+        }        
     });
 
+    // Pomocná funkce pro získání hodnot filtrů z checkboxů nebo inputů
+    function getSelectedFilters(filterName) {
+        const elements = document.querySelectorAll(`input[name=${filterName}]:checked`);
+        const values = Array.from(elements).map(element => element.value);
+        return values;
+    }
+
     function loadMoreProducts() {
-        // URL pro načtení dalších produktů s offsetem a limitem
-        const url = `/Products/ProductsByCategory?categoryId=${categoryId}&offset=${offset}&limit=${limit}`;
+        // Získáme hodnoty filtrů ze stránek (z inputů, kde jsou filtry nastavené)
+        const selectedSizes = getSelectedFilters('selectedSizes'); // funkce vrátí hodnoty pro vybrané velikosti
+        const selectedColors = getSelectedFilters('selectedColors'); // funkce vrátí hodnoty pro vybrané barvy
+
+        // Základní URL bez filtrů
+        let url = `/Products/ProductsByCategory?categoryId=${categoryId}&offset=${offset}&limit=${limit}`;
+
+        // Přidáme filtry do URL, pokud existují
+        if (selectedSizes.length > 0) {
+            url += `&selectedSizes=${selectedSizes.join(',')}`;
+        }
+        if (selectedColors.length > 0) {
+            url += `&selectedColors=${selectedColors.join(',')}`;
+        }
 
         fetch(url, {
             headers: { "X-Requested-With": "XMLHttpRequest" } // Zde explicitně nastavujeme hlavičku
@@ -215,6 +244,10 @@
                 if (totalLoaded >= maxProducts) {
                     console.log("Všechny produkty byly načteny.");
                 }
+
+                mainPageDiv.classList.remove(`h-[${125 * timesHelp}vh]`);
+                timesHelp++;
+                mainPageDiv.classList.add(`h-[${125 * timesHelp}vh]`);
             }
             times += 2.5;
 
