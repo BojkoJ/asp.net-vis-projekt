@@ -81,9 +81,9 @@ namespace Projekt.Services
             {
                 connection.Open();
 
-                // Základní SQL dotaz s JOIN na varianty
+                // Základní SQL dotaz s GROUP BY na produkt
                 string sql =
-                    @"SELECT DISTINCT p.""productid"", p.""name"", p.""description"", p.""price"", p.""imgurl"", c.""categoryid"", c.""name"" AS CategoryName
+                    @"SELECT p.""productid"", p.""name"", p.""description"", p.""price"", p.""imgurl"", c.""categoryid"", c.""name"" AS CategoryName
               FROM ""products"" p
               JOIN ""categories"" c ON p.""categoryid"" = c.""categoryid""
               JOIN ""productvariants"" v ON p.""productid"" = v.""productid""
@@ -100,6 +100,9 @@ namespace Projekt.Services
                 {
                     sql += @" AND v.""color"" = ANY(@selectedColors)";
                 }
+
+                // Skupinové vyhledávání podle produktů
+                sql += @" GROUP BY p.""productid"", c.""categoryid""";
 
                 // Přidáme LIMIT a OFFSET
                 sql += " LIMIT @Limit OFFSET @Offset";

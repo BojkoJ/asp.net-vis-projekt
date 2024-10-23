@@ -194,8 +194,7 @@
         
         if ((totalLoaded < maxProducts) && (scrolled > scrollBound)) {
             loadMoreProducts();
-            console.log(scrolled);
-            console.log(scrollBound);
+      
             lastScrollY = window.scrollY; // Zaktualizujeme poslední známou pozici scrollu
         }        
     });
@@ -217,10 +216,16 @@
 
         // Přidáme filtry do URL, pokud existují
         if (selectedSizes.length > 0) {
-            url += `&selectedSizes=${selectedSizes.join(',')}`;
+            selectedSizes.forEach(size => {
+                url += `&selectedSizes=${size}`; // Přidáváme každý vybraný filtr samostatně
+            });
         }
+        
+        // Pro barvy zkontrolujeme, zda jsou nějaké vybrány, a přidáme každý jako samostatný parametr
         if (selectedColors.length > 0) {
-            url += `&selectedColors=${selectedColors.join(',')}`;
+            selectedColors.forEach(color => {
+                url += `&selectedColors=${color}`; // Přidáváme každý vybraný filtr samostatně
+            });
         }
 
         fetch(url, {

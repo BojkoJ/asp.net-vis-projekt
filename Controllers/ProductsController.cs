@@ -96,8 +96,6 @@ namespace Projekt.Controllers
                 || (selectedColors != null && selectedColors.Count > 0)
             )
             {
-                Console.WriteLine("Filtruji podle filtrů");
-
                 // Kontrola, zda je selectedSizes null před použitím ToArray
                 string sizes =
                     selectedSizes != null
@@ -110,8 +108,6 @@ namespace Projekt.Controllers
                         ? string.Join(",", selectedColors.ToArray())
                         : "žádné barvy";
 
-                Console.WriteLine("Zadané filtry: " + sizes + " " + colors);
-
                 // Voláme metodu s filtry
                 products = _db.GetProductsByCategoryFilter(
                     categoryId,
@@ -123,7 +119,6 @@ namespace Projekt.Controllers
             }
             else
             {
-                Console.WriteLine("Získávám produkty bez filtrů");
                 // Voláme metodu bez filtrů
                 products = _db.GetProductsByCategory(categoryId, actualLimit, offset);
             }
