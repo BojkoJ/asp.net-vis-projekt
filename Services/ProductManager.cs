@@ -13,7 +13,7 @@ namespace Projekt.Services
             _connectionString = connectionString;
         }
 
-        public List<Product> GetProductsByCategory(int categoryId, int limit = 3)
+        public List<Product> GetProductsByCategory(int categoryId, int limit = 6, int offset = 0)
         {
             List<Product> products = new List<Product>();
 
@@ -25,12 +25,13 @@ namespace Projekt.Services
               FROM ""products"" p
               JOIN ""categories"" c ON p.""categoryid"" = c.""categoryid""
               WHERE p.""categoryid"" = @categoryid
-              LIMIT @Limit";
+              LIMIT @Limit OFFSET @Offset";
 
                 using (var command = new NpgsqlCommand(sql, connection))
                 {
                     command.Parameters.AddWithValue("CategoryId", categoryId);
                     command.Parameters.AddWithValue("Limit", limit);
+                    command.Parameters.AddWithValue("Offset", offset);
 
                     using (var reader = command.ExecuteReader())
                     {
@@ -42,15 +43,13 @@ namespace Projekt.Services
                                 Name = reader.GetString(1),
                                 Description = reader.GetString(2),
                                 Price = reader.GetDecimal(3),
-                                ImgUrl = reader.GetString(4), // Načti nový sloupec
+                                ImgUrl = reader.GetString(4),
                                 Category = new Category
                                 {
                                     CategoryId = reader.GetInt32(5),
                                     Name = reader.GetString(6),
                                 },
-                                Variants =
-                                    new List<ProductVariant>() // Inicializace prázdné kolekce variant
-                                ,
+                                Variants = new List<ProductVariant>(), // Inicializace prázdné kolekce variant
                             };
 
                             products.Add(product);

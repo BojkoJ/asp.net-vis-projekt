@@ -21,11 +21,32 @@ namespace Projekt.Controllers
         public IActionResult ProductsByCategory(
             [FromQuery] int categoryId,
             [FromQuery] List<string> selectedSizes = null,
-            [FromQuery] List<string> selectedColors = null
+            [FromQuery] List<string> selectedColors = null,
+            [FromQuery] int limit = 6, // Načteme 6 produktů na začátek
+            [FromQuery] int offset = 0 // Offset pro Lazy Load
         )
         {
-            // Načteme produkty pro zvolenou kategorii
-            var products = _db.GetProductsByCategory(categoryId, limit: 20);
+            // Nastavíme maximální počet produktů na stránce
+            int maxProducts = 18;
+
+            // Pokud by offset přesáhl maximální počet produktů, nebudeme již načítat více produktů
+            if (offset >= maxProducts)
+            {
+                return NoContent(); // Vrátíme prázdnou odpověď
+            }
+
+            // Zajistíme, že nenačteme více než zbývající počet produktů
+            int actualLimit = Math.Min(limit, maxProducts - offset);
+
+            // Načteme produkty pro zvolenou kategorii s použitím offsetu a limitu
+            var products = _db.GetProductsByCategory(categoryId, actualLimit, offset); // Použití actualLimit
+
+            // Pokud jde o AJAX volání, vrátíme pouze partial view
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView("_ProductListPartial", products);
+            }
+            else { }
 
             // Definujeme pevné velikosti a barvy pro každou kategorii
             List<string> availableSizes = new List<string>();
@@ -93,9 +114,8 @@ namespace Projekt.Controllers
             }
 
             // Pokud nebyly nalezeny žádné produkty, zobrazíme toast notifikaci
-            if (products.Count == 0)
+            if (products.Count == 0 && offset == 0) // Pouze pokud jsme na začátku, jinak načítáme dál
             {
-                products = _db.GetProductsByCategory(categoryId, limit: 20);
                 TempData["NoResults"] =
                     "Nebyly nalezeny žádné produkty odpovídající vašim kritériím.";
             }

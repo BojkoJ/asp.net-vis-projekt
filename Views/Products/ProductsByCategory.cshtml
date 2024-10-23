@@ -80,41 +80,8 @@
 
 
         <!-- Zobrazení produktů -->
-        <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3 w-[83%]">
-            @foreach (var product in Model.Products)
-            {
-                <div class="bg-white shadow-lg rounded-lg overflow-hidden px-2 hover:shadow-xl transition-shadow">
-                    <img class="mt-7 h-[300px] w-full object-scale-down" src="@product.ImgUrl" alt="@product.Name">
-                    <div class="p-6">
-                        <a class="">
-                            <h3 class="font-semibold text-lg text-gray-900 cursor-pointer hover:underline"
-                                style="min-height: 3rem; line-height: 1.5rem;">
-                                @product.Name
-                            </h3>
-                        </a>
-
-                        <p class="mt-2 text-gray-600">
-                            @(product.Description.Length > 46 ? product.Description.Substring(0, 40) + "..." : product.Description)
-                        </p>
-                        <div class="flex justify-between">
-                            <div class="mt-4">
-                                <span class="text-indigo-600 font-bold">@product.Price Kč</span>
-                            </div>
-                            <div class="mt-4 flex flex-col">
-                                <p class="text-sm font-medium">Dostupné velikosti:</p>
-                                <div class="flex flex-wrap gap-2 mt-2">
-                                    @foreach (var variant in product.Variants)
-                                    {
-                                        <span class="w-8 h-8 flex items-center p-2 justify-center bg-gray-200 text-xs font-medium rounded-lg">
-                                            @variant.Size
-                                        </span>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
+        <div class="products-container grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3 w-[83%]">
+            @Html.Partial("_ProductListPartial", Model.Products)
         </div>
     </div>
 </div>
@@ -202,3 +169,59 @@
         form.submit();
     });
 </script>
+
+<script>
+    let offset = 6; // Začínáme od 6. produktu
+    const limit = 6; // Načítáme vždy 6 produktů
+    const maxProducts = 18; // Maximálně 18 produktů
+    let totalLoaded = 6; // Počet načtených produktů na začátku je 6
+    const categoryId = '@Model.CategoryId'; // Správně převeď Razor do JavaScriptu jako string
+    let lastScrollY = window.scrollY; // Uložíme počáteční pozici scrollování
+
+    let times = 1;
+
+    window.addEventListener('scroll', () => {
+        // Zkontrolujeme, zda uživatel scrolloval alespoň o 200px dolů
+        if ((window.scrollY - lastScrollY) > (300 * times)) {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight && totalLoaded < maxProducts) {
+                loadMoreProducts();
+                lastScrollY = window.scrollY; // Zaktualizujeme poslední známou pozici scrollu
+            }
+        }
+    });
+
+    function loadMoreProducts() {
+        // URL pro načtení dalších produktů s offsetem a limitem
+        const url = `/Products/ProductsByCategory?categoryId=${categoryId}&offset=${offset}&limit=${limit}`;
+
+        fetch(url, {
+            headers: { "X-Requested-With": "XMLHttpRequest" } // Zde explicitně nastavujeme hlavičku
+        })
+        .then(response => {
+            if (!response.ok) {
+                console.log("Žádné další produkty.");
+                return;
+            }
+            return response.text();
+        })
+        .then(data => {
+            if (data) {
+                const productsContainer = document.querySelector('.products-container');
+                productsContainer.insertAdjacentHTML('beforeend', data);
+                offset += limit; // Zvýšíme offset o limit pro další volání
+                totalLoaded += limit; // Zvýšíme celkový počet načtených produktů
+
+                // Zastavíme načítání, pokud dosáhneme 18 produktů
+                if (totalLoaded >= maxProducts) {
+                    console.log("Všechny produkty byly načteny.");
+                }
+            }
+            times += 2.5;
+
+        })
+        .catch(error => console.error('Error loading more products:', error));
+
+
+    }
+</script>
+

@@ -1,2 +1,0 @@
-1st terminal - dotnet watch run
-2nd terminal - npm run watch:css
