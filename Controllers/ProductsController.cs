@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Projekt.DataMappers;
 using Projekt.Models;
 using Projekt.Models.ViewModels;
 using Projekt.Services;
@@ -191,5 +192,99 @@ namespace Projekt.Controllers
         }
 
         // ---------------------------------------------- Row Data Gateway END ----------------------------------------------
+        // ---------------------------------------------- Active Record BEGIN ----------------------------------------------
+        [HttpGet]
+        public IActionResult ProductsByCategory_ActiveRecord(
+            [FromQuery] int categoryId,
+            [FromQuery] List<string> selectedSizes = null,
+            [FromQuery] List<string> selectedColors = null
+        )
+        {
+            var products = ProductActiveRecord.GetProductsByCategory(categoryId, _connectionString);
+
+            // Filtrování podle velikostí
+            if (selectedSizes != null && selectedSizes.Count > 0)
+            {
+                products = products
+                    .Where(p => p.Variants.Any(v => selectedSizes.Contains(v.Size)))
+                    .ToList();
+            }
+
+            // Filtrování podle barev
+            if (selectedColors != null && selectedColors.Count > 0)
+            {
+                products = products
+                    .Where(p => p.Variants.Any(v => selectedColors.Contains(v.Color)))
+                    .ToList();
+            }
+
+            // Vytvoříme ViewModel pro zobrazení produktů a filtrů
+            var viewModel = new CategoryProductsViewModel
+            {
+                CategoryId = categoryId,
+                CategoryName = products.Count > 0 ? products[0].Name : "Neznámá kategorie",
+                Products = products
+                    .Select(p => new Product
+                    {
+                        ProductId = p.ProductId,
+                        Name = p.Name,
+                        Description = p.Description,
+                        Price = p.Price,
+                        ImgUrl = p.ImgUrl,
+                        Variants = p.Variants,
+                    })
+                    .ToList(),
+                AvailableSizes = selectedSizes,
+                SelectedSizes = selectedSizes,
+                AvailableColors = selectedColors,
+                SelectedColors = selectedColors,
+            };
+
+            return View(viewModel);
+        }
+
+        // ---------------------------------------------- Active Record END ----------------------------------------------
+        // ---------------------------------------------- Data Mapper BEGIN ----------------------------------------------
+        [HttpGet]
+        public IActionResult ProductsByCategory_DataMapper(
+            [FromQuery] int categoryId,
+            [FromQuery] List<string> selectedSizes = null,
+            [FromQuery] List<string> selectedColors = null
+        )
+        {
+            var productMapper = new ProductMapper(_connectionString);
+            var products = productMapper.GetProductsByCategory(categoryId);
+
+            // Filtrování podle velikostí
+            if (selectedSizes != null && selectedSizes.Count > 0)
+            {
+                products = products
+                    .Where(p => p.Variants.Any(v => selectedSizes.Contains(v.Size)))
+                    .ToList();
+            }
+
+            // Filtrování podle barev
+            if (selectedColors != null && selectedColors.Count > 0)
+            {
+                products = products
+                    .Where(p => p.Variants.Any(v => selectedColors.Contains(v.Color)))
+                    .ToList();
+            }
+
+            // Vytvoříme ViewModel pro zobrazení produktů a filtrů
+            var viewModel = new CategoryProductsViewModel
+            {
+                CategoryId = categoryId,
+                CategoryName = products.Count > 0 ? products[0].Name : "Neznámá kategorie",
+                Products = products,
+                AvailableSizes = selectedSizes,
+                SelectedSizes = selectedSizes,
+                AvailableColors = selectedColors,
+                SelectedColors = selectedColors,
+            };
+
+            return View(viewModel);
+        }
+        // ---------------------------------------------- Data Mapper END ----------------------------------------------
     }
 }
