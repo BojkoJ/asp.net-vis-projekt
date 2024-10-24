@@ -2,7 +2,7 @@
 
 @foreach (var product in Model)
 {
-    <div class="bg-white shadow-lg rounded-lg overflow-hidden px-2 hover:shadow-xl transition-shadow">
+    <div class="bg-white max-h-[556px] shadow-lg rounded-lg overflow-hidden px-2 hover:shadow-xl transition-shadow">
         <img class="mt-7 h-[300px] w-full object-scale-down" src="@product.ImgUrl" alt="@product.Name">
         <div class="p-6">
             <a class="">
@@ -15,7 +15,7 @@
             <p class="mt-2 text-gray-600">
                 @(product.Description.Length > 46 ? product.Description.Substring(0, 40) + "..." : product.Description)
             </p>
-            <div class="flex justify-between">
+            <div class="flex justify-between ">
                 <div class="mt-4">
                     <span class="text-indigo-600 font-bold">@product.Price Kč</span>
                 </div>

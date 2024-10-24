@@ -23,6 +23,7 @@ namespace Projekt.Controllers
             [FromQuery] int categoryId,
             [FromQuery] List<string> selectedSizes = null,
             [FromQuery] List<string> selectedColors = null,
+            [FromQuery] List<string> selectedBrands = null,
             [FromQuery] int limit = 6, // Načteme 6 produktů na začátek
             [FromQuery] int offset = 0 // Offset pro Lazy Load
         )
@@ -42,6 +43,7 @@ namespace Projekt.Controllers
             // Definujeme pevné velikosti a barvy pro každou kategorii
             List<string> availableSizes = new List<string>();
             List<string> availableColors = new List<string>();
+            List<string> availableBrands = new List<string>();
 
             switch (categoryId)
             {
@@ -56,6 +58,7 @@ namespace Projekt.Controllers
                         "Fialová",
                         "Vícebarevné",
                     };
+                    availableBrands = new List<string> { "Venum", "Fairtex", "Yokkao", "Twins" };
                     break;
                 case 2: // Bandáže
                     availableSizes = new List<string> { "2.5m", "3m", "4m" };
@@ -68,6 +71,7 @@ namespace Projekt.Controllers
                         "Zelená",
                         "Vícebarevné",
                     };
+                    availableBrands = new List<string> { "Venum", "Fairtex", "Yokkao" };
                     break;
                 case 3: // Chrániče
                     availableSizes = new List<string> { "S", "M", "L" };
@@ -80,6 +84,7 @@ namespace Projekt.Controllers
                         "Tyrkysová",
                         "Vícebarevné",
                     };
+                    availableBrands = new List<string> { "Venum", "Fairtex", "Yokkao" };
                     break;
             }
 
@@ -94,6 +99,7 @@ namespace Projekt.Controllers
             if (
                 (selectedSizes != null && selectedSizes.Count > 0)
                 || (selectedColors != null && selectedColors.Count > 0)
+                || (selectedBrands != null && selectedBrands.Count > 0)
             )
             {
                 // Kontrola, zda je selectedSizes null před použitím ToArray
@@ -108,11 +114,18 @@ namespace Projekt.Controllers
                         ? string.Join(",", selectedColors.ToArray())
                         : "žádné barvy";
 
+                // Kontrola, zda je selectedBrands null před použitím ToArray
+                string brands =
+                    selectedBrands != null
+                        ? string.Join(",", selectedBrands.ToArray())
+                        : "žádné značky";
+
                 // Voláme metodu s filtry
                 products = _db.GetProductsByCategoryFilter(
                     categoryId,
                     selectedSizes,
                     selectedColors,
+                    selectedBrands,
                     actualLimit,
                     offset
                 );
@@ -152,6 +165,8 @@ namespace Projekt.Controllers
                 SelectedSizes = selectedSizes,
                 AvailableColors = availableColors,
                 SelectedColors = selectedColors,
+                AvailableBrands = availableBrands,
+                SelectedBrands = selectedBrands,
             };
 
             return View(viewModel);

@@ -58,6 +58,24 @@
                 }
             </form>
 
+            <!-- Separárot -->
+            <hr class="border-gray-400 border-[1px]">
+
+
+            <!-- Třetí formulář: Filtr podle značek -->
+            <form id="brandForm" method="get" class="mb-4 mt-3 w-[17%]">
+                <label for="brandForm" class="block mb-2 text-gray-700 font-medium">Značky:</label>
+                @foreach (var brand in Model.AvailableBrands)
+                {
+                    <div class="flex items-center mb-2">
+                        <input type="checkbox" name="selectedBrands" value="@brand" id="brand_@brand" 
+                            @(Model.SelectedBrands != null && Model.SelectedBrands.Contains(brand) ? "checked" : "")
+                            class="w-4 h-4 text-indigo-600 bg-indigo-100 rounded-lg focus:ring-2 hover:bg-indigo-200 transition duration-200 ease-in-out checked:bg-indigo-600" />
+                        <label for="brand@brand" class="ml-2 text-gray-700 text-sm font-medium hover:text-indigo-700">@brand</label>
+                    </div>
+                }
+            </form>
+
             <!-- Tlačítka pro potvrzení a zrušení -->
             <div class="flex gap-x-2">
                 <!-- Společné tlačítko pro potvrzení (spojí oba formuláře a odešle je) -->
@@ -98,7 +116,7 @@
     }, 5000);
 </script>
 
-<!-- JavaScript pro spojení obou formulářů a odeslání -->
+<!-- JavaScript pro spojení všech tří formulářů a odeslání -->
 <script>
     // Funkce pro odstranění diakritiky
     function removeDiacritics(text) {
@@ -157,6 +175,18 @@
             }
         }
 
+        // Přidáme hodnoty ze třetího formuláře (značky)
+        let brandFormElements = document.getElementById('brandForm').elements;
+        for (let i = 0; i < brandFormElements.length; i++) {
+            if (brandFormElements[i].checked) {
+                let input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = brandFormElements[i].name;
+                input.value = brandFormElements[i].value;
+                form.appendChild(input);
+            }
+        }
+
         // Přidáme hidden input pro categoryId
         let categoryIdInput = document.createElement('input');
         categoryIdInput.type = 'hidden';
@@ -192,7 +222,10 @@
         scrolled = (window.scrollY - lastScrollY);
         scrollBound = (320 * times);
         
-        if ((totalLoaded < maxProducts) && (scrolled > scrollBound)) {
+        const productsContainer = document.querySelector('.products-container');
+
+        if ((totalLoaded < maxProducts) && (scrolled > scrollBound) && (productsContainer.children.length > 5)) {
+            
             loadMoreProducts();
       
             lastScrollY = window.scrollY; // Zaktualizujeme poslední známou pozici scrollu
@@ -210,6 +243,7 @@
         // Získáme hodnoty filtrů ze stránek (z inputů, kde jsou filtry nastavené)
         const selectedSizes = getSelectedFilters('selectedSizes'); // funkce vrátí hodnoty pro vybrané velikosti
         const selectedColors = getSelectedFilters('selectedColors'); // funkce vrátí hodnoty pro vybrané barvy
+        const selectedBrands = getSelectedFilters('selectedBrands'); // funkce vrátí hodnoty pro vybrané značky
 
         // Základní URL bez filtrů
         let url = `/Products/ProductsByCategory?categoryId=${categoryId}&offset=${offset}&limit=${limit}`;
@@ -225,6 +259,13 @@
         if (selectedColors.length > 0) {
             selectedColors.forEach(color => {
                 url += `&selectedColors=${color}`; // Přidáváme každý vybraný filtr samostatně
+            });
+        }
+
+        // Pro značky zkontrolujeme, zda jsou nějaké vybrány, a přidáme každý jako samostatný parametr
+        if (selectedBrands.length > 0) {
+            selectedBrands.forEach(brand => {
+                url += `&selectedBrands=${brand}`; // Přidáváme každý vybraný filtr samostatně
             });
         }
 

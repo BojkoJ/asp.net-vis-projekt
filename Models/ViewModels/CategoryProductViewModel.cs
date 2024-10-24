@@ -9,5 +9,7 @@ namespace Projekt.Models
         public List<string> SelectedSizes { get; set; } // Vybrané velikosti
         public List<string> AvailableColors { get; set; } // Seznam všech dostupných barev
         public List<string> SelectedColors { get; set; } // Vybrané barvy
+        public List<string> AvailableBrands { get; set; } // Seznam všech dostupných značek
+        public List<string> SelectedBrands { get; set; } // Vybrané značky
     }
 }

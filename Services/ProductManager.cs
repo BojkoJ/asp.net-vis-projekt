@@ -71,6 +71,7 @@ namespace Projekt.Services
             int categoryId,
             List<string> selectedSizes = null,
             List<string> selectedColors = null,
+            List<string> selectedBrands = null,
             int limit = 6,
             int offset = 0
         )
@@ -101,6 +102,19 @@ namespace Projekt.Services
                     sql += @" AND v.""color"" = ANY(@selectedColors)";
                 }
 
+                // Dynamicky přidáme filtr pro značky, pokud je nastaven
+                if (selectedBrands != null && selectedBrands.Count > 0)
+                {
+                    Console.WriteLine("Adding brands to filter");
+                    Console.WriteLine("Selected brands: " + string.Join(", ", selectedBrands));
+
+                    // Constructing multiple LIKE conditions connected with OR
+                    var likeConditions = selectedBrands.Select(
+                        (brand, index) => $"p.\"name\" LIKE @brand{index}"
+                    );
+                    sql += $" AND ({string.Join(" OR ", likeConditions)})";
+                }
+
                 // Skupinové vyhledávání podle produktů
                 sql += @" GROUP BY p.""productid"", c.""categoryid""";
 
@@ -122,6 +136,14 @@ namespace Projekt.Services
                     if (selectedColors != null && selectedColors.Count > 0)
                     {
                         command.Parameters.AddWithValue("selectedColors", selectedColors.ToArray());
+                    }
+                    if (selectedBrands != null && selectedBrands.Count > 0)
+                    {
+                        // Adding parameters for each brand
+                        for (int i = 0; i < selectedBrands.Count; i++)
+                        {
+                            command.Parameters.AddWithValue($"brand{i}", $"%{selectedBrands[i]}%");
+                        }
                     }
 
                     using (var reader = command.ExecuteReader())
