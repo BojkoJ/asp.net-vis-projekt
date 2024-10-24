@@ -8,7 +8,7 @@
 
 ## Jaký tech stack projekt používá?
 
-V tomto projektu jsem se rozhodl kromě povinného Bootstrapu použít další technologie pro efektivní vývoj.
+V tomto projektu jsem se rozhodl kromě povinného C# použít další technologie pro efektivní vývoj.
 
 -   [C#](https://learn.microsoft.com/dotnet/csharp/)
 -   [ASP.NET](https://dotnet.microsoft.com/apps/aspnet)
