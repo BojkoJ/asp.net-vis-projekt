@@ -1,9 +1,10 @@
 # VIS - Projekt E-commerce / E-shop
 
-Toto je projekt do předmětu Vývoj Informačních Systémů
-Autor: Jan Bojko 3. Ročník, obor Informatika.
+<b>Toto je projekt do předmětu Vývoj Informačních Systémů</b>
 
-Téma - E-shop / E-commerce s Muay Thai vybavením.
+<b>Autor:</b> Jan Bojko 3. Ročník, obor Informatika.
+
+<b>Téma</b> - E-shop / E-commerce s Muay Thai vybavením.
 
 ## Jaký tech stack projekt používá?
 
