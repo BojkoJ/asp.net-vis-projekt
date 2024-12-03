@@ -70,11 +70,7 @@
                         firstNameInput.value = data.firstName;
                         lastNameInput.value = data.lastName;
                         emailInput.value = data.userName
-                    } else {
-                        firstNameInput.placeholder = 'Jméno';
-                        lastNameInput.placeholder = 'Příjmení';
-                        emailInput.placeholder = 'E-mail';
-                    }
+                    } 
                 })
                 .catch(error => console.error('Error fetching user info:', error));
         });
