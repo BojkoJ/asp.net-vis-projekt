@@ -8,5 +8,6 @@ namespace Projekt.Models
         public int StockQuantity { get; set; } // Počet kusů na skladě
         public int ProductId { get; set; } // Cizí klíč na Product
         public Product Product { get; set; } // Navigační vlastnost pro vztah s produktem
+        public decimal Price { get; set; } // Cena varianty
     }
 }

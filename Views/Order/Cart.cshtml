@@ -1,0 +1,84 @@
+@{
+    ViewData["Title"] = "Košík";
+}
+
+<h1 class="text-2xl font-bold mb-4">Váš košík</h1>
+
+<div id="cart-container" class="bg-white shadow-md rounded-lg p-4 min-h-[83vh]">
+    <!-- Zpráva pro prázdný košík -->
+    <div class="text-center text-gray-600" id="empty-cart-message">
+        Váš košík je prázdný.
+    </div>
+
+    <!-- Tabulka pro zobrazení košíku -->
+    <table id="cart-table" class="w-full hidden">
+        <thead>
+            <tr>
+                <th class="border px-4 py-2">Produkt</th>
+                <th class="border px-4 py-2">Cena</th>
+                <th class="border px-4 py-2">Množství</th>
+                <th class="border px-4 py-2">Celkem</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <!-- Tlačítko pro pokračování v objednávce -->
+    <div class="mt-4">
+        <form asp-action="Cart" method="post" id="cart-form">
+            <input type="hidden" id="cart-data" name="CartData" />
+            <button
+                id="checkout-button"
+                type="submit"
+                class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded hidden"
+            >
+                Pokračovat k objednávce
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function loadCart() {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const table = document.getElementById("cart-table");
+        const tbody = table.querySelector("tbody");
+        const emptyMessage = document.getElementById("empty-cart-message");
+        const checkoutButton = document.getElementById("checkout-button");
+        const cartDataInput = document.getElementById("cart-data");
+
+        if (cart.length === 0) {
+            // Zobrazí zprávu, pokud je košík prázdný
+            emptyMessage.style.display = "block";
+            table.style.display = "none";
+            checkoutButton.style.display = "none";
+        } else {
+            // Skryje zprávu a zobrazí tabulku
+            emptyMessage.style.display = "none";
+            table.style.display = "table";
+            checkoutButton.style.display = "block";
+
+            // Vyčistí obsah tabulky
+            tbody.innerHTML = "";
+
+            // Přidá produkty do tabulky
+            cart.forEach(item => {
+                const row = `
+                    <tr>
+                        <td class="border px-4 py-2">${item.name}</td>
+                        <td class="border px-4 py-2">${item.price} Kč</td>
+                        <td class="border px-4 py-2">${item.quantity}</td>
+                        <td class="border px-4 py-2">${(item.price * item.quantity).toFixed(2)} Kč</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+
+            // Uloží JSON dat košíku do skrytého vstupního pole pro odeslání
+            cartDataInput.value = JSON.stringify(cart);
+        }
+    }
+
+    // Načtení obsahu košíku při načtení stránky
+    loadCart();
+</script>

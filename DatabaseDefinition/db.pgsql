@@ -29,12 +29,12 @@ CREATE TABLE ProductVariants (
         REFERENCES Products(ProductId)
 );
 
--- Tabulka pro uživatele (zákazníky, zaměstnance, adminy)
 CREATE TABLE Users (
     UserId INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     FirstName VARCHAR(100) NOT NULL,
     LastName VARCHAR(100) NOT NULL,
     Email VARCHAR(255) UNIQUE NOT NULL,
+    Password VARCHAR(255) NOT NULL, -- Heslo pro uživatele
     Role VARCHAR(50) NOT NULL -- Admin, Employee, Customer
 );
 

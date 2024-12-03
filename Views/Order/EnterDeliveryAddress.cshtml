@@ -1,0 +1,40 @@
+@model Projekt.Models.ViewModels.DeliveryAddressViewModel
+
+<div class="container mx-auto mt-8 max-w-lg h-[80vh]">
+    <h1 class="text-2xl font-bold mb-4">Zadejte doručovací adresu</h1>
+    <form asp-action="EnterDeliveryAddress" method="post" class="bg-white p-6 rounded-lg shadow-lg space-y-4">
+        <div>
+            <label asp-for="StreetAddress" class="block text-sm font-medium text-gray-700"></label>
+            <input asp-for="StreetAddress" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" />
+            <span asp-validation-for="StreetAddress" class="text-red-500 text-sm"></span>
+        </div>
+
+        <div>
+            <label asp-for="City" class="block text-sm font-medium text-gray-700"></label>
+            <input asp-for="City" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" />
+            <span asp-validation-for="City" class="text-red-500 text-sm"></span>
+        </div>
+
+        <div>
+            <label asp-for="PostalCode" class="block text-sm font-medium text-gray-700"></label>
+            <input asp-for="PostalCode" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" />
+            <span asp-validation-for="PostalCode" class="text-red-500 text-sm"></span>
+        </div>
+
+        <div>
+            <label asp-for="Country" class="block text-sm font-medium text-gray-700"></label>
+            <input asp-for="Country" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" />
+            <span asp-validation-for="Country" class="text-red-500 text-sm"></span>
+        </div>
+
+        <div>
+            <button type="submit" class="w-full py-2 px-4 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                Pokračovat
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

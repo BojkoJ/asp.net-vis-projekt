@@ -1,0 +1,49 @@
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = "Účet";
+}
+
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
+    <div class="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
+        <div class="flex items-center justify-center mb-6">
+            <!-- Ikona uživatele -->
+            <div class="bg-indigo-700 text-white rounded-full p-4">
+                <img class="w-12 h-12" src="https://static.vecteezy.com/system/resources/thumbnails/014/396/452/small_2x/comic-style-user-icon-with-transparent-background-file-png.png" alt="">
+            </div>
+        </div>
+        <h1 class="text-center text-2xl font-bold text-gray-800 mb-4">Vítejte, @User.Claims.FirstOrDefault(c => c.Type == "FirstName")?.Value @User.Claims.FirstOrDefault(c => c.Type == "LastName")?.Value!</h1>
+        <p class="text-center text-gray-600 mb-8">Zde jsou detaily vašeho účtu:</p>
+        <div class="space-y-4">
+            <div class="flex items-center">
+                <span class="font-medium text-gray-700">E-mail:</span>
+                <span class="ml-2 text-gray-900">@User.Identity.Name</span>
+            </div>
+            <div class="flex items-center">
+                <span class="font-medium text-gray-700">Jméno:</span>
+                <span class="ml-2 text-gray-900">@User.Claims.FirstOrDefault(c => c.Type == "FirstName")?.Value</span>
+            </div>
+            <div class="flex items-center">
+                <span class="font-medium text-gray-700">Příjmení:</span>
+                <span class="ml-2 text-gray-900">@User.Claims.FirstOrDefault(c => c.Type == "LastName")?.Value</span>
+            </div>
+            <div class="flex items-center">
+                <span class="font-medium text-gray-700">Role:</span>
+                @{
+                    var role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                    var displayRole = role == "Customer" ? "Zákazník" : role;
+                }
+                <span class="ml-2 text-gray-900">@displayRole</span>
+            </div>
+        </div>
+        <div class="mt-8 text-center">
+            <form asp-action="Logout" asp-controller="Account" method="post" class="inline" id="logout-link">
+                <button type="submit" class="py-2 px-4 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300">
+                    Odhlásit se
+                </button>
+            </form>
+
+        </div>
+
+    </div>
+</div>

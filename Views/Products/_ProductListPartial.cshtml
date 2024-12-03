@@ -1,8 +1,10 @@
+@using System.Web
+
 @model List<Projekt.Models.Product>
 
 @foreach (var product in Model)
 {
-    <div class="bg-white max-h-[556px] shadow-lg rounded-lg overflow-hidden px-2 hover:shadow-xl transition-shadow">
+    <div class="bg-white max-h-[650px] shadow-lg rounded-lg overflow-hidden px-2 hover:shadow-xl transition-shadow">
         <img class="mt-7 h-[300px] w-full object-scale-down" src="@product.ImgUrl" alt="@product.Name">
         <div class="p-6">
             <a class="">
@@ -31,6 +33,40 @@
                     </div>
                 </div>
             </div>
+            <div class="mt-1">
+                <button 
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded" 
+                    onclick="addToCart('@product.ProductId', '@HttpUtility.JavaScriptStringEncode(product.Name)', @product.Price)">
+                    Do košíku
+                </button>
+            </div>
         </div>
     </div>
 }
+
+<script>
+    function addToCart(productId, name, price) {
+
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+
+        let existingProduct = cart.find(p => p.productId === productId);
+
+        console.log(existingProduct);
+        
+        if (existingProduct) {
+            existingProduct.quantity += 1; // Zvýšíme množství
+        } else {
+            cart.push({
+                productId: productId,
+                name: name,
+                price: price,
+                quantity: 1
+            });
+        }
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+        alert("Produkt byl přidán do košíku.");
+        location.reload();
+    }
+</script>

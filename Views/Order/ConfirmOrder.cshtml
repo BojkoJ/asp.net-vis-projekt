@@ -1,0 +1,81 @@
+@model Projekt.Models.ViewModels.OrderSummaryViewModel
+
+<h2 class="text-2xl font-bold mb-4">Rekapitulace objednávky</h2>
+
+<div class="bg-white shadow-md rounded-lg p-6 mb-4">
+    <h3 class="text-xl font-semibold mb-2">Produkty:</h3>
+    @if (Model.Items != null && Model.Items.Any())
+    {
+        <ul class="space-y-2">
+            @foreach (var item in Model.Items)
+            {
+                <li class="flex justify-start">
+                    <span>@item.ProductName &nbsp;&nbsp;&nbsp;</span>
+                    <span>@item.Quantity ks &nbsp;&nbsp;&nbsp;</span>
+                    <span>@item.Price Kč &nbsp;&nbsp;&nbsp;</span>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>Košík je prázdný.</p>
+    }
+</div>
+
+<div class="bg-white shadow-md rounded-lg p-6 mb-4">
+    <p><strong>Celková cena:</strong> @Model.TotalPrice Kč</p>
+    <p><strong>Způsob dopravy:</strong> @Model.ShippingMethod</p>
+    @if (!string.IsNullOrEmpty(Model.PickupPoint))
+    {
+        <p><strong>Pickup point:</strong> @Model.PickupPoint</p>
+    }
+    @if (!string.IsNullOrEmpty(Model.DeliveryAddress))
+    {
+        <p><strong>Doručovací adresa:</strong> @Model.DeliveryAddress</p>
+    }
+    <p><strong>Způsob platby:</strong> @Model.PaymentMethod</p>
+</div>
+
+<form asp-action="ConfirmOrder" method="post" class="bg-white shadow-md rounded-lg p-6 mb-4 flex flex-col items-center">
+    <h3 class="text-xl font-semibold mb-2">Vaše údaje:</h3>
+    <div class="mb-4">
+        <label for="FirstName" class="block font-medium text-gray-700 w-[450px]">Jméno</label>
+        <input type="text" id="FirstName" name="FirstName" value="@Model.FirstName" 
+               class="leading-9 px-5 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" />
+    </div>
+    <div class="mb-4">
+        <label for="LastName" class="block font-medium text-gray-700 w-[450px]">Příjmení</label>
+        <input type="text" id="LastName" name="LastName" value="@Model.LastName" 
+               class="leading-9 px-5 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" />
+    </div>
+    <div class="mb-4">
+        <label for="Email" class="block font-medium text-gray-700 w-[450px]">E-mail</label>
+        <input type="email" id="Email" name="Email" value="@Model.Email" 
+               class="leading-9 px-5 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" />
+    </div>
+    <button type="submit" class="w-[200px] mt-6 py-2 px-4 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring focus:ring-indigo-300">Potvrdit objednávku</button>
+</form>
+
+<script>
+        document.addEventListener("DOMContentLoaded", () => {
+            fetch('/Account/GetUserInfo')
+                .then(response => response.json())
+                .then(data => {
+                    const firstNameInput = document.getElementById('FirstName');
+                    const lastNameInput = document.getElementById('LastName');
+                    const emailInput = document.getElementById('Email');
+
+                    if (data.isAuthenticated) {
+                        firstNameInput.value = data.firstName;
+                        lastNameInput.value = data.lastName;
+                        emailInput.value = data.userName
+                    } else {
+                        firstNameInput.placeholder = 'Jméno';
+                        lastNameInput.placeholder = 'Příjmení';
+                        emailInput.placeholder = 'E-mail';
+                    }
+                })
+                .catch(error => console.error('Error fetching user info:', error));
+        });
+    </script>

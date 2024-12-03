@@ -1,0 +1,33 @@
+<div class="min-h-screen flex flex-col justify-center items-center bg-gray-100">
+    <div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-lg">
+        <h1 class="text-2xl font-bold text-center text-indigo-700 mb-6">Vyberte výdejní místo nebo Z-box</h1>
+
+        <form asp-action="SelectPickupPoint" method="post" class="space-y-6">
+            <!-- Dropdown výběr -->
+            <div>
+                <label for="SelectedPoint" class="block text-sm font-medium text-gray-700 mb-2">
+                    Vyberte možnost:
+                </label>
+                <select
+                    id="SelectedPoint"
+                    name="SelectedPoint"
+                    required
+                    class="block w-full border border-gray-300 rounded-md shadow-sm px-4 py-2 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500"
+                >
+                    <option value="Z-box 1">Z-box 1</option>
+                    <option value="Výdejní místo 1">Výdejní místo 1</option>
+                </select>
+            </div>
+
+            <!-- Tlačítko -->
+            <div>
+                <button
+                    type="submit"
+                    class="w-full mt-9 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-md shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                    Pokračovat
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

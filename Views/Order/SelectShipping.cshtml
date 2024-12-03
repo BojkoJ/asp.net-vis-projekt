@@ -1,0 +1,45 @@
+<div class="min-h-screen flex flex-col justify-center items-center bg-gray-100">
+    <div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
+        <h1 class="text-2xl font-bold text-center text-indigo-700 mb-6">Vyberte způsob dopravy</h1>
+
+        <form asp-action="SelectShipping" method="post" class="space-y-6">
+            <!-- Možnost Z-box -->
+            <div class="flex items-center">
+                <input
+                    type="radio"
+                    id="posta"
+                    name="ShippingMethod"
+                    value="Pošta"
+                    class="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                />
+                <label for="posta" class="ml-3 block text-sm font-medium text-gray-700">
+                    Pošta
+                </label>
+            </div>
+
+            <!-- Možnost Výdejní místo -->
+            <div class="flex items-center">
+                <input
+                    type="radio"
+                    id="zasilkovna"
+                    name="ShippingMethod"
+                    value="Zásilkovna"
+                    class="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                />
+                <label for="zasilkovna" class="ml-3 block text-sm font-medium text-gray-700">
+                    Zásilkovna
+                </label>
+            </div>
+
+            <!-- Tlačítko -->
+            <div>
+                <button
+                    type="submit"
+                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-md shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                    Pokračovat
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

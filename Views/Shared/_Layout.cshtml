@@ -32,7 +32,7 @@
 
                     <!-- Košík s ikonou a počtem produktů -->
                     <li class="relative font-medium">
-                        <a href="#" class="text-white hover:text-gray-300 flex items-center">
+                        <a href="/Order/Cart" class="text-white hover:text-gray-300 flex items-center">
                             <!-- Ikona košíku -->
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l1.38-6.58a1 1 0 00-.97-1.42H6.21l-.97-4.58H3" />
@@ -41,14 +41,26 @@
                             </svg>
 
                             <!-- Počet produktů -->
-                            <span class="top-0 right-0 inline-block w-5 h-5 bg-red-500 text-white text-center text-xs rounded-full">3</span>
+                            <span 
+                                class="top-0 right-0 inline-block w-5 h-5 bg-red-500 text-white text-center text-xs rounded-full"
+                                id="cart-count"
+                            ></span>
                         </a>
                     </li>
 
-                    <!-- Účet -->
-                    <li>
-                        <a href="#" class="text-white hover:text-gray-300">Účet</a>
+
+
+                    <li id="account-link">
+                        <!-- Výchozí stav: odkaz na přihlášení -->
+                        <a href="/Account/Login" class="text-white hover:text-gray-300">Přihlásit</a>
                     </li>
+
+                    <form asp-action="Logout" asp-controller="Account" method="post" class="inline" id="logout-link">
+                        <button type="submit" class="text-white hover:text-gray-300 font-medium">
+                            Odhlásit se
+                        </button>
+                    </form>
+
                 </ul>
             </div>
         </nav>
@@ -68,6 +80,41 @@
     </footer>
 
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            fetch('/Account/GetUserInfo')
+                .then(response => response.json())
+                .then(data => {
+
+                    console.log(data);
+
+                    const accountLink = document.getElementById("account-link");
+                    const logoutLink = document.getElementById("logout-link");
+
+                    if (data.isAuthenticated) {
+                        accountLink.innerHTML = `
+                            <a href="/Account/Details" class="text-white hover:text-gray-300">Účet</a>
+                        `;
+                    } else {
+                        accountLink.innerHTML = `
+                            <a href="/Account/Login" class="text-white hover:text-gray-300">Přihlásit</a>
+                        `;
+
+                        logoutLink.style.display = "none";
+                    }
+                })
+                .catch(error => console.error('Error fetching user info:', error));
+
+            // Načtení košíku
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+            // Zobrazení počtu produktů v košíku
+            const cartCount = document.getElementById("cart-count");
+            cartCount.innerText = cart.reduce((acc, item) => acc + item.quantity, 0);
+
+        });
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
